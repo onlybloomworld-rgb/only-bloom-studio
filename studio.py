@@ -588,7 +588,7 @@ def generate():
     )
 
     try:
-        endpoint = "fal-ai/flux-lora-image-to-image" if ref_image_url else "fal-ai/flux-lora"
+        endpoint = "fal-ai/flux-lora/image-to-image" if ref_image_url else "fal-ai/flux-lora"
         arguments = {
             "prompt":                full_prompt,
             "negative_prompt":       negative,
