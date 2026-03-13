@@ -588,11 +588,12 @@ def generate():
     )
 
     try:
-        endpoint = "fal-ai/flux-lora/image-to-image" if ref_image_url else "fal-ai/flux-lora"
+        # FLUX.2 [dev] LoRA — mejor skin texture, mantiene LoRA de Lolla
+        endpoint = "fal-ai/flux-2/lora/image-to-image" if ref_image_url else "fal-ai/flux-2/lora"
         arguments = {
             "prompt":                full_prompt,
             "negative_prompt":       negative,
-            "loras":                 [{"path": LOLLA_LORA_URL, "scale": 1.0}],
+            "loras":                 [{"path": LOLLA_LORA_URL, "scale": 0.9}],
             "image_size":            ratio,
             "num_inference_steps":   steps,
             "guidance_scale":        3.5,
