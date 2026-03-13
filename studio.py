@@ -589,7 +589,7 @@ def generate():
 
     try:
         # FLUX.2 [dev] LoRA — mejor skin texture, mantiene LoRA de Lolla
-        endpoint = "fal-ai/flux-2/lora/image-to-image" if ref_image_url else "fal-ai/flux-2/lora"
+        endpoint = "fal-ai/flux-2/lora/edit" if ref_image_url else "fal-ai/flux-2/lora"
         arguments = {
             "prompt":                full_prompt,
             "negative_prompt":       negative,
@@ -601,7 +601,7 @@ def generate():
             "enable_safety_checker": safety,
         }
         if ref_image_url:
-            arguments["image_url"] = ref_image_url
+            arguments["image_urls"] = [ref_image_url]  # FLUX.2 edit uses array
             arguments["strength"]  = float(ref_strength)
 
         result = fal_client.subscribe(endpoint, arguments=arguments)
