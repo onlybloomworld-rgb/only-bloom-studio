@@ -268,6 +268,7 @@ HTML = r"""<!DOCTYPE html>
           <option value="28">Rápido (28)</option>
           <option value="35" selected>Estándar (35)</option>
           <option value="50">Alta (50)</option>
+          <option value="60">Ultra — NSFW (60)</option>
         </select>
       </div>
     </div>
@@ -582,9 +583,14 @@ def generate():
     ]))
 
     negative = (
-        "different person, wrong face, other woman, bad anatomy, "
-        "deformed, ugly, blurry, low quality, cartoon, watermark, "
-        "text, oversaturated, plastic skin, doll-like, ai-looking"
+        "deformed body, mutated limbs, extra limbs, missing limbs, "
+        "bad anatomy, wrong anatomy, anatomically incorrect, "
+        "deformed hands, extra fingers, missing fingers, fused fingers, "
+        "deformed face, distorted face, asymmetric face, melting face, "
+        "bad proportions, unnatural proportions, warped body, twisted body, "
+        "different person, wrong face, other woman, ugly, blurry, "
+        "low quality, cartoon, watermark, text, plastic skin, ai-looking, "
+        "overexposed, underexposed, grain, noise, artifacts"
     )
 
     try:
@@ -593,10 +599,10 @@ def generate():
         arguments = {
             "prompt":                full_prompt,
             "negative_prompt":       negative,
-            "loras":                 [{"path": LOLLA_LORA_URL, "scale": 0.9}],
+            "loras":                 [{"path": LOLLA_LORA_URL, "scale": 0.85}],
             "image_size":            ratio,
             "num_inference_steps":   steps,
-            "guidance_scale":        3.5,
+            "guidance_scale":        4.5,
             "num_images":            1,
             "enable_safety_checker": safety,
         }
