@@ -594,27 +594,20 @@ def generate():
     )
 
     try:
-        # Siempre usar flux-2/lora para generación fresca
-        # La referencia se inyecta en el prompt como contexto, no como img2img
-        # Esto evita que el modelo "copie" la referencia
+        # FLUX.1 [dev] LoRA — el más estable y probado para consistencia de personaje
+        # Siempre text-to-image puro, sin img2img que deforma
+        # LoRA entrenado con flux-2-trainer → usar endpoint FLUX.2
         endpoint = "fal-ai/flux-2/lora"
         arguments = {
             "prompt":                full_prompt,
             "negative_prompt":       negative,
-            "loras":                 [{"path": LOLLA_LORA_URL, "scale": 0.85}],
+            "loras":                 [{"path": LOLLA_LORA_URL, "scale": 1.0}],
             "image_size":            ratio,
             "num_inference_steps":   steps,
-            "guidance_scale":        4.5,
+            "guidance_scale":        3.5,
             "num_images":            1,
             "enable_safety_checker": safety,
         }
-        # Si hay referencia con strength alta (>40%), usar img2img de FLUX.1 que es más estable
-        if ref_image_url and float(ref_strength) > 0.40:
-            endpoint = "fal-ai/flux-lora/image-to-image"
-            arguments["image_url"] = ref_image_url
-            arguments["strength"]  = float(ref_strength)
-            # Para img2img usar FLUX.1 lora (más estable para edición)
-            del arguments["image_size"]
 
         result = fal_client.subscribe(endpoint, arguments=arguments)
 
