@@ -198,10 +198,10 @@ HTML = r"""<!DOCTYPE html>
     <div id="strengthWrap" style="display:none">
       <div class="strength-row">
         <span class="str-label">Influencia</span>
-        <input type="range" id="refStr" min="20" max="80" value="45" oninput="document.getElementById('strVal').textContent=this.value+'%'">
-        <span class="str-val" id="strVal">45%</span>
+        <input type="range" id="refStr" min="10" max="60" value="25" oninput="updateStrengthWarning(this.value)">
+        <span class="str-val" id="strVal">25%</span>
       </div>
-      <div class="str-hint">Baja = Lolla sigue siendo el foco &nbsp;·&nbsp; Alta = sigue más la referencia</div>
+      <div class="str-hint" id="strHint">Baja (10-30%) = genera nuevo con referencia sutil &nbsp;·&nbsp; Alta (50%+) = copia la referencia</div>
     </div>
   </div>
 
@@ -594,8 +594,10 @@ def generate():
     )
 
     try:
-        # FLUX.2 [dev] LoRA — mejor skin texture, mantiene LoRA de Lolla
-        endpoint = "fal-ai/flux-2/lora/edit" if ref_image_url else "fal-ai/flux-2/lora"
+        # Siempre usar flux-2/lora para generación fresca
+        # La referencia se inyecta en el prompt como contexto, no como img2img
+        # Esto evita que el modelo "copie" la referencia
+        endpoint = "fal-ai/flux-2/lora"
         arguments = {
             "prompt":                full_prompt,
             "negative_prompt":       negative,
@@ -606,9 +608,13 @@ def generate():
             "num_images":            1,
             "enable_safety_checker": safety,
         }
-        if ref_image_url:
-            arguments["image_urls"] = [ref_image_url]  # FLUX.2 edit uses array
+        # Si hay referencia con strength alta (>40%), usar img2img de FLUX.1 que es más estable
+        if ref_image_url and float(ref_strength) > 0.40:
+            endpoint = "fal-ai/flux-lora/image-to-image"
+            arguments["image_url"] = ref_image_url
             arguments["strength"]  = float(ref_strength)
+            # Para img2img usar FLUX.1 lora (más estable para edición)
+            del arguments["image_size"]
 
         result = fal_client.subscribe(endpoint, arguments=arguments)
 
